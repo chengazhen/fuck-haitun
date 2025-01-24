@@ -65,17 +65,27 @@ def refresh_account(device_id):
             proxies=working_proxy,
         )
 
-        # 检查响应状态码
         if response.status_code != 200:
             print(f"\n服务器响应错误，状态码: {response.status_code}")
+            if response.text:
+                print("\n错误详情:")
+                print("-" * 50)
+                print(response.text[:500].strip())  # 展示更多内容，并去除首尾空格
+                print("-" * 50)
             return False
 
-        # 尝试解析JSON响应
         try:
             data = response.json()
         except ValueError:
             print("\n服务器返回的数据格式错误")
-            print(f"原始响应内容: {response.text[:200]}...")  # 只显示前200个字符
+            print("\n响应详情:")
+            print("-" * 50)
+            # 尝试格式化显示响应内容
+            response_lines = response.text[:500].strip().split("\n")
+            for line in response_lines:
+                if line.strip():  # 只显示非空行
+                    print(f"| {line.strip()}")
+            print("-" * 50)
             return False
 
         # 检查响应码
